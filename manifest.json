@@ -1,0 +1,24 @@
+{
+  "name": "MagicPod Notifier",
+  "description": "Add desktop notification feature to MagicPod",
+  "version": "0.1.0",
+  "manifest_version": 3,
+  "homepage_url": "https://github.com/manicmaniac/magicpod-notifier",
+  "permissions": [
+    "notifications",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://magicpod.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://app.magicpod.com/*/*/*/edit-testcase/"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}
