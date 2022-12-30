@@ -9,16 +9,35 @@
     "tabs"
   ],
   "host_permissions": [
-    "https://magicpod.com/*"
+    "https://app.magicpod.com/*"
   ],
   "content_scripts": [
     {
-      "matches": ["https://app.magicpod.com/*/*/*/edit-testcase/"],
-      "js": ["content.js"],
+      "matches": [
+        "https://app.magicpod.com/*/*/*/edit-testcase/"
+      ],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_end"
     }
   ],
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "externally_connectable": {
+    "matches": [
+      "https://app.magicpod.com/*"
+    ]
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "script.js"
+      ],
+      "matches": [
+        "https://app.magicpod.com/*"
+      ]
+    }
+  ]
 }

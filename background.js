@@ -12,7 +12,7 @@ function sendNotification(message, tab) {
   });
 }
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
   switch (message.type) {
     case 'connected':
       sendNotification(
@@ -30,13 +30,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 chrome.notifications.onClicked.addListener(notificationId => {
-  chrome.notifications.clear(notificationId);
   const tab = tabsByNotificationId.get(notificationId);
-  if (tab == null) {
-    return;
+  if (tab != null) {
+    chrome.windows.update(tab.windowId, {focused: true}, _window => {
+      chrome.tabs.update(tab.id, {active: true});
+    });
   }
-  chrome.windows.update(tab.windowId, {focused: true});
-  chrome.tabs.update(tab.id, {highlighted: true});
+  chrome.notifications.clear(notificationId);
 });
 
 chrome.notifications.onClosed.addListener(notificationId => {
