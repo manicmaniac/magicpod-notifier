@@ -27,17 +27,18 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
   }
 });
 
-chrome.notifications.onClicked.addListener(notificationId => {
-  chrome.storage.local.get(notificationId, items => {
-    chrome.storage.local.remove(notificationId);
+chrome.notifications.onClicked.addListener(async (notificationId) => {
+  try {
+    const items = await chrome.storage.local.get(notificationId);
     const tabId = items[notificationId];
     if (tabId != null) {
-      chrome.tabs.get(tabId)
-        .then(tab => chrome.windows.update(tab.windowId, {focused: true}))
-        .then(_window => chrome.tabs.update(tabId, {active: true}));
+      const tab = await chrome.tabs.get(tabId);
+      await chrome.windows.update(tab.windowId, {focused: true});
+      await chrome.tabs.update(tabId, {active: true});
     }
-    chrome.notifications.clear(notificationId);
-  });
+  } finally {
+    await chrome.notifications.clear(notificationId);
+  }
 });
 
 chrome.notifications.onClosed.addListener(notificationId => {
