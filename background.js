@@ -1,5 +1,3 @@
-const tabsByNotificationId = new Map();
-
 function sendNotification(message, tab) {
   const options = {
     title: 'MagicPod',
@@ -8,7 +6,7 @@ function sendNotification(message, tab) {
     message
   };
   chrome.notifications.create(options, notificationId => {
-    tabsByNotificationId.set(notificationId, tab);
+    chrome.storage.local.set({[notificationId]: tab.id});
   });
 }
 
@@ -30,15 +28,18 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
 });
 
 chrome.notifications.onClicked.addListener(notificationId => {
-  const tab = tabsByNotificationId.get(notificationId);
-  if (tab != null) {
-    chrome.windows.update(tab.windowId, {focused: true}, _window => {
-      chrome.tabs.update(tab.id, {active: true});
-    });
-  }
-  chrome.notifications.clear(notificationId);
+  chrome.storage.local.get(notificationId, items => {
+    chrome.storage.local.remove(notificationId);
+    const tabId = items[notificationId];
+    if (tabId != null) {
+      chrome.tabs.get(tabId)
+        .then(tab => chrome.windows.update(tab.windowId, {focused: true}))
+        .then(_window => chrome.tabs.update(tabId, {active: true}));
+    }
+    chrome.notifications.clear(notificationId);
+  });
 });
 
 chrome.notifications.onClosed.addListener(notificationId => {
-  tabsByNotificationId.delete(notificationId);
+  chrome.storage.local.remove(notificationId);
 });

@@ -6,6 +6,7 @@
   "homepage_url": "https://github.com/manicmaniac/magicpod-notifier",
   "permissions": [
     "notifications",
+    "storage",
     "tabs"
   ],
   "host_permissions": [
